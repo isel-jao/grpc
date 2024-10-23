@@ -3,6 +3,7 @@ import * as protoLoader from "@grpc/proto-loader";
 
 const path = "proto/example.proto";
 const port = 50051;
+// const port = 5000;
 
 const packageDefinition = protoLoader.loadSync(path);
 
@@ -10,7 +11,7 @@ const grpcObj = grpc.loadPackageDefinition(packageDefinition);
 
 async function main() {
   const client = new grpcObj.examplePackage.ExampleService(
-    `localhost:${port}`,
+    `192.168.1.132:${port}`,
     grpc.credentials.createInsecure()
   );
   const deadline = new Date();
@@ -23,14 +24,14 @@ async function main() {
     console.log("Client ready");
   });
 
-  //   message to message example
-  //   client.MessageToMessage({ message: "Ping" }, (err, response) => {
-  //     if (err) {
-  //       console.error(err);
-  //       return;
-  //     }
-  //     console.log("Response", response);
-  //   });
+  // message to message example
+  client.MessageToMessage({ message: "Ping" }, (err, response) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log("Response", response);
+  });
 
   // message to stream example
   //   const stream = client.MessageToStream({ message: "Ping" });

@@ -1,18 +1,26 @@
 import { join } from "path";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
+import * as reflection from "grpc-reflection";
 
 const path = "proto/example.proto";
 const port = 50051;
 
 const packageDefinition = protoLoader.loadSync(path);
 
-const grpcObj = grpc.loadPackageDefinition(packageDefinition);
+const grpcObj = grpc.loadPackageDefinition(packageDefinition, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+});
 
 const service = grpcObj.examplePackage.ExampleService.service;
 
 async function main() {
   const server = new grpc.Server();
+
   server.addService(service, {
     MessageToMessage: (call, callback) => {
       const { request } = call;
@@ -47,6 +55,7 @@ async function main() {
       });
     },
   });
+  reflection.enableReflection(server);
 
   server.bindAsync(
     `0.0.0.0:${port}`,
